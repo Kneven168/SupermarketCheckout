@@ -1,0 +1,17 @@
+server.port: 8080
+logging:
+  level:
+    root: INFO
+    org.springframework.r2dbc: OFF
+
+spring:
+  application:
+    name: checkout-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/checkout_db
+    username: postgres
+    password: test123
+    pool:
+      enabled: true
+      initial-size: 5
+      max-size: 10
