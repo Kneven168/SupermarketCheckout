@@ -16,46 +16,52 @@ import java.time.Duration;
 public class ProductService {
 
   private final ProductRepository repository;
-
   private final ReactiveRedisTemplate<String, Product> productRedisTemplate;
-
   private static final Duration PRODUCT_CACHE_TTL = Duration.ofHours(1);
 
   public Mono<Product> getProductBySku(String sku) {
     return productRedisTemplate.opsForValue().get(sku)
+        .doOnSuccess(product -> {
+          if (product != null) {
+            log.info("Product with SKU '{}' found in cache.", sku);
+          }
+        })
         .switchIfEmpty(
-            repository.findById(sku)
-                .flatMap(product ->
-                    productRedisTemplate.opsForValue()
-                        .set(sku, product, PRODUCT_CACHE_TTL)
-                        .thenReturn(product)
-                )
+            Mono.defer(() -> {
+              log.info("Product with SKU '{}' not found in cache. Fetching from DB.", sku);
+              return repository.findById(sku)
+                  .flatMap(this::saveToCache);
+            })
         );
   }
 
-  public Mono<Product> saveProduct(Product product) {
+  public Mono<Product> createProduct(Product product) {
     return repository.save(product)
-        .flatMap(savedProduct ->
-            productRedisTemplate.opsForValue()
-                .set(savedProduct.sku(), savedProduct, PRODUCT_CACHE_TTL)
-                .thenReturn(savedProduct)
-        )
+        .flatMap(this::saveToCache)
         .doOnSuccess(savedProduct ->
             log.info("Product with SKU '{}' saved successfully.", savedProduct.sku()));
   }
 
-  public Mono<Product> updateProduct(Product product, String sku) {
+  public Mono<Product> updateProduct(String sku, Product product) {
     if (product.sku() != null && !product.sku().equals(sku)) {
       return Mono.error(new IllegalArgumentException("SKU in path does not match SKU in body"));
     }
-    return this.saveProduct(product);
+    return this.createProduct(product);
 
   }
 
   public Mono<Void> deleteProduct(String sku) {
     return repository.deleteById(sku)
         .then(productRedisTemplate.opsForValue().delete(sku))
-        .doOnSuccess(v -> log.info("Product with SKU '{}' successfully deleted from DB and cache.", sku))
+        .doOnSuccess(
+            v -> log.info("Product with SKU '{}' successfully deleted from DB and cache.", sku))
         .then();
+  }
+
+  private Mono<Product> saveToCache(Product product) {
+    return productRedisTemplate.opsForValue()
+        .set(product.sku(), product, PRODUCT_CACHE_TTL)
+        .doOnSuccess(v -> log.info("Product with SKU '{}' saved to cache.", product.sku()))
+        .thenReturn(product);
   }
 }

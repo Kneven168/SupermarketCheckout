@@ -1,0 +1,132 @@
+package com.haiilo.supermarket.checkout;
+
+import com.haiilo.supermarket.checkout.domain.Product;
+import com.haiilo.supermarket.checkout.repository.ProductRepository;
+import com.haiilo.supermarket.checkout.service.ProductService;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.ReactiveRedisTemplate;
+import org.springframework.data.redis.core.ReactiveValueOperations;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import java.time.Duration;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class ProductServiceTest {
+  public static final String SKU_A = "A";
+
+  @Mock
+  private ProductRepository productRepository;
+
+  @Mock
+  private ReactiveRedisTemplate<String, Product> productRedisTemplate;
+
+  @Mock
+  private ReactiveValueOperations<String, Product> reactiveValueOperations;
+
+  @InjectMocks
+  private ProductService productService;
+
+  private static Product testProduct;
+
+  @BeforeAll
+  static void setUp() {
+    testProduct = new Product(SKU_A, "Apple", 50, 3, 130);
+  }
+
+  @Test
+  @DisplayName("getProductBySku should return product from cache if present")
+  void getProductBySku_FoundInCache() {
+    when(productRedisTemplate.opsForValue()).thenReturn(reactiveValueOperations);
+    when(reactiveValueOperations.get(SKU_A)).thenReturn(Mono.just(testProduct));
+
+    StepVerifier.create(productService.getProductBySku(SKU_A))
+        .expectNext(testProduct)
+        .verifyComplete();
+
+    verify(productRepository, never()).findById(anyString());
+  }
+
+  @Test
+  @DisplayName("getProductBySku should return product from DB and cache it if not in cache")
+  void getProductBySku_NotFoundInCache_FoundInDb() {
+    when(productRedisTemplate.opsForValue()).thenReturn(reactiveValueOperations);
+    when(reactiveValueOperations.get(SKU_A)).thenReturn(Mono.empty());
+    when(productRepository.findById(SKU_A)).thenReturn(Mono.just(testProduct));
+    when(reactiveValueOperations.set(eq(SKU_A), eq(testProduct), any(Duration.class))).thenReturn(Mono.just(true));
+
+    StepVerifier.create(productService.getProductBySku(SKU_A))
+        .expectNext(testProduct)
+        .verifyComplete();
+
+    verify(productRepository, times(1)).findById(SKU_A);
+    verify(reactiveValueOperations, times(1)).set(eq(SKU_A), eq(testProduct), any(Duration.class));
+  }
+
+  @Test
+  @DisplayName("createProduct should save to repository and cache")
+  void createProduct_Success() {
+    when(productRedisTemplate.opsForValue()).thenReturn(reactiveValueOperations);
+    when(productRepository.save(testProduct)).thenReturn(Mono.just(testProduct));
+    when(reactiveValueOperations.set(eq(SKU_A), eq(testProduct), any(Duration.class))).thenReturn(Mono.just(true));
+
+    StepVerifier.create(productService.createProduct(testProduct))
+        .expectNext(testProduct)
+        .verifyComplete();
+
+    verify(productRepository, times(1)).save(testProduct);
+    verify(reactiveValueOperations, times(1)).set(eq(SKU_A), eq(testProduct), any(Duration.class));
+  }
+
+  @Test
+  @DisplayName("updateProduct should update product successfully")
+  void updateProduct_Success() {
+    when(productRedisTemplate.opsForValue()).thenReturn(reactiveValueOperations);
+    when(productRepository.save(testProduct)).thenReturn(Mono.just(testProduct));
+    when(reactiveValueOperations.set(eq(SKU_A), eq(testProduct), any(Duration.class))).thenReturn(Mono.just(true));
+
+    StepVerifier.create(productService.updateProduct(SKU_A, testProduct))
+        .expectNext(testProduct)
+        .verifyComplete();
+
+    verify(productRepository, times(1)).save(testProduct);
+    verify(reactiveValueOperations, times(1)).set(eq(SKU_A), eq(testProduct), any(Duration.class));
+  }
+
+  @Test
+  @DisplayName("updateProduct should return error on SKU mismatch")
+  void updateProduct_SkuMismatch_Error() {
+    Product mismatchedProduct = new Product("B", "Banana", 30, null, null);
+
+    StepVerifier.create(productService.updateProduct(SKU_A, mismatchedProduct))
+        .expectError(IllegalArgumentException.class)
+        .verify();
+
+    verify(productRepository, never()).save(any());
+  }
+
+  @Test
+  @DisplayName("deleteProduct should delete from repository and cache")
+  void deleteProduct_Success() {
+    when(productRedisTemplate.opsForValue()).thenReturn(reactiveValueOperations);
+    when(productRepository.deleteById(SKU_A)).thenReturn(Mono.empty());
+    when(reactiveValueOperations.delete(SKU_A)).thenReturn(Mono.just(true));
+
+    StepVerifier.create(productService.deleteProduct(SKU_A))
+        .verifyComplete();
+
+    verify(productRepository, times(1)).deleteById(SKU_A);
+    verify(reactiveValueOperations, times(1)).delete(SKU_A);
+  }
+}
+

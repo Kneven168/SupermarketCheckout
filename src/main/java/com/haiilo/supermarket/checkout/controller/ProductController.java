@@ -18,7 +18,7 @@ public class ProductController {
   @PostMapping
   @ResponseStatus(HttpStatus.CREATED)
   public Mono<Product> createProduct(@RequestBody Product product) {
-    return productService.saveProduct(product);
+    return productService.createProduct(product);
   }
 
   @GetMapping("/{sku}")
@@ -28,7 +28,7 @@ public class ProductController {
 
   @PutMapping("/{sku}")
   public Mono<Product> updateProduct(@PathVariable String sku, @RequestBody Product product) {
-    return productService.updateProduct(product, sku);
+    return productService.updateProduct(sku, product);
   }
 
   @DeleteMapping("/{sku}")
