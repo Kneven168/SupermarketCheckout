@@ -1,4 +1,4 @@
-package com.haiilo.supermarket.checkout.utill;
+package com.haiilo.supermarket.checkout.util;
 
 import java.time.Duration;
 

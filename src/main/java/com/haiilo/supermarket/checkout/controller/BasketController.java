@@ -1,6 +1,6 @@
 package com.haiilo.supermarket.checkout.controller;
 
-import static com.haiilo.supermarket.checkout.utill.AppConstants.BASKET_ID;
+import static com.haiilo.supermarket.checkout.util.AppConstants.BASKET_ID;
 
 import com.haiilo.supermarket.checkout.domain.Basket;
 import com.haiilo.supermarket.checkout.service.BasketService;

@@ -1,8 +1,7 @@
-package com.haiilo.supermarket.checkout.utill;
+package com.haiilo.supermarket.checkout.util;
 
-
-import static com.haiilo.supermarket.checkout.utill.AppConstants.BASKET_ID;
-import static com.haiilo.supermarket.checkout.utill.AppConstants.BASKET_TTL;
+import static com.haiilo.supermarket.checkout.util.AppConstants.BASKET_ID;
+import static com.haiilo.supermarket.checkout.util.AppConstants.BASKET_TTL;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import com.haiilo.supermarket.checkout.domain.Basket;
@@ -19,7 +18,7 @@ import reactor.core.publisher.Mono;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class CheckoutHelper {
+public class BasketHelper {
 
   private final ProductService productService;
   private final ReactiveRedisTemplate<String, Basket> basketRedisTemplate;

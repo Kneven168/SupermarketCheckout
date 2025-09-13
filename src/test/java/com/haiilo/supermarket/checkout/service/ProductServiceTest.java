@@ -1,8 +1,17 @@
-package com.haiilo.supermarket.checkout;
+package com.haiilo.supermarket.checkout.service;
+
+import static com.haiilo.supermarket.checkout.TestConstants.SKU_A;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import com.haiilo.supermarket.checkout.domain.Product;
 import com.haiilo.supermarket.checkout.repository.ProductRepository;
-import com.haiilo.supermarket.checkout.service.ProductService;
+import java.time.Duration;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,15 +24,8 @@ import org.springframework.data.redis.core.ReactiveValueOperations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
-  public static final String SKU_A = "A";
 
   @Mock
   private ProductRepository productRepository;
@@ -63,7 +65,8 @@ class ProductServiceTest {
     when(productRedisTemplate.opsForValue()).thenReturn(reactiveValueOperations);
     when(reactiveValueOperations.get(SKU_A)).thenReturn(Mono.empty());
     when(productRepository.findBySku(SKU_A)).thenReturn(Mono.just(testProduct));
-    when(reactiveValueOperations.set(eq(SKU_A), eq(testProduct), any(Duration.class))).thenReturn(Mono.just(true));
+    when(reactiveValueOperations.set(eq(SKU_A), eq(testProduct), any(Duration.class))).thenReturn(
+        Mono.just(true));
 
     StepVerifier.create(productService.getProductBySku(SKU_A))
         .expectNext(testProduct)
@@ -78,7 +81,8 @@ class ProductServiceTest {
   void createProduct_Success() {
     when(productRedisTemplate.opsForValue()).thenReturn(reactiveValueOperations);
     when(productRepository.save(testProduct)).thenReturn(Mono.just(testProduct));
-    when(reactiveValueOperations.set(eq(SKU_A), eq(testProduct), any(Duration.class))).thenReturn(Mono.just(true));
+    when(reactiveValueOperations.set(eq(SKU_A), eq(testProduct), any(Duration.class))).thenReturn(
+        Mono.just(true));
 
     StepVerifier.create(productService.createProduct(testProduct))
         .expectNext(testProduct)
@@ -93,7 +97,8 @@ class ProductServiceTest {
   void updateProduct_Success() {
     when(productRedisTemplate.opsForValue()).thenReturn(reactiveValueOperations);
     when(productRepository.updateBySku(testProduct)).thenReturn(Mono.just(true));
-    when(reactiveValueOperations.set(eq(SKU_A), eq(testProduct), any(Duration.class))).thenReturn(Mono.just(true));
+    when(reactiveValueOperations.set(eq(SKU_A), eq(testProduct), any(Duration.class))).thenReturn(
+        Mono.just(true));
 
     StepVerifier.create(productService.updateProduct(SKU_A, testProduct))
         .expectNext(testProduct)
@@ -106,7 +111,7 @@ class ProductServiceTest {
   @Test
   @DisplayName("updateProduct should return error on SKU mismatch")
   void updateProduct_SkuMismatch_Error() {
-    Product mismatchedProduct = new Product(2L,"B", "Banana", 30, null, null);
+    Product mismatchedProduct = new Product(2L, "B", "Banana", 30, null, null);
 
     StepVerifier.create(productService.updateProduct(SKU_A, mismatchedProduct))
         .expectError(IllegalArgumentException.class)

@@ -1,10 +1,10 @@
 package com.haiilo.supermarket.checkout.service;
 
-import static com.haiilo.supermarket.checkout.utill.AppConstants.BASKET_TTL;
+import static com.haiilo.supermarket.checkout.util.AppConstants.BASKET_TTL;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 import com.haiilo.supermarket.checkout.domain.Basket;
-import com.haiilo.supermarket.checkout.utill.CheckoutHelper;
+import com.haiilo.supermarket.checkout.util.BasketHelper;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class BasketService {
 
-  private final CheckoutHelper checkoutHelper;
+  private final BasketHelper basketHelper;
   private final ReactiveRedisTemplate<String, Basket> basketRedisTemplate;
 
   public Mono<Basket> createBasket() {
@@ -31,25 +31,25 @@ public class BasketService {
 
   public Mono<Integer> addItemToBasket(String basketId, String sku) {
     return Mono.zip(
-            checkoutHelper.getProductBySku(sku),
-            checkoutHelper.getBasketById(basketId),
+            basketHelper.getProductBySku(sku),
+            basketHelper.getBasketById(basketId),
             (product, basket) -> {
               basket.addItem(product.sku());
               return basket;
             })
-        .flatMap(checkoutHelper::getTotalPrice);
+        .flatMap(basketHelper::getTotalPrice);
   }
 
   public Mono<Integer> removeItemFromBasket(String basketId, String sku) {
     log.info("Removing one item with SKU '{}' from basket '{}'", sku, basketId);
-    return checkoutHelper.getBasketById(basketId)
+    return basketHelper.getBasketById(basketId)
         .doOnNext(basket -> {
           if (!basket.getItems().containsKey(sku)) {
             throw new ResponseStatusException(NOT_FOUND, "Item with SKU " + sku + " not found in basket");
           }
           basket.removeItem(sku);
         })
-        .flatMap(checkoutHelper::getTotalPrice);
+        .flatMap(basketHelper::getTotalPrice);
   }
 
   public Mono<Void> cancelBasket(String basketId) {
