@@ -23,14 +23,19 @@ public class BasketController {
     return basketService.createBasket();
   }
 
+  @GetMapping("/{basketId}")
+  public Mono<Basket> getBasketById(@PathVariable String basketId) {
+    return basketService.getBasketById(basketId);
+  }
+
   @PostMapping("/{basketId}/items/{sku}")
-  public Mono<Integer> addItem(@PathVariable String basketId, @PathVariable String sku) {
+  public Mono<Integer> addItemToBasket(@PathVariable String basketId, @PathVariable String sku) {
     return basketService.addItemToBasket(basketId, sku)
         .contextWrite(Context.of(BASKET_ID, basketId));
   }
 
   @PutMapping("/{basketId}/items/{sku}")
-  public Mono<Integer> removeItem(@PathVariable String basketId, @PathVariable String sku) {
+  public Mono<Integer> removeItemFromBasket(@PathVariable String basketId, @PathVariable String sku) {
     return basketService.removeItemFromBasket(basketId, sku)
         .contextWrite(Context.of(BASKET_ID, basketId));
   }

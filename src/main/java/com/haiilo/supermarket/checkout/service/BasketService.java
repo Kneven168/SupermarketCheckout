@@ -29,6 +29,11 @@ public class BasketService {
         .thenReturn(newBasket);
   }
 
+  public Mono<Basket> getBasketById(String basketId) {
+    log.info("Getting a basket by ID '{}'", basketId);
+    return  basketHelper.getBasketById(basketId);
+  }
+
   public Mono<Integer> addItemToBasket(String basketId, String sku) {
     return Mono.zip(
             basketHelper.getProductBySku(sku),
