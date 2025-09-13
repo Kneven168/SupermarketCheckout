@@ -29,7 +29,7 @@ public class ProductService {
         .switchIfEmpty(
             Mono.defer(() -> {
               log.info("Product with SKU '{}' not found in cache. Fetching from DB.", sku);
-              return repository.findById(sku)
+              return repository.findBySku(sku)
                   .flatMap(this::saveToCache);
             })
         );
@@ -46,12 +46,16 @@ public class ProductService {
     if (product.sku() != null && !product.sku().equals(sku)) {
       return Mono.error(new IllegalArgumentException("SKU in path does not match SKU in body"));
     }
-    return this.createProduct(product);
+    return repository.updateBySku(product)
+        .then(Mono.just(product))
+        .flatMap(this::saveToCache)
+        .doOnSuccess(savedProduct ->
+            log.info("Product with SKU '{}' updated successfully.", savedProduct.sku()));
 
   }
 
   public Mono<Void> deleteProduct(String sku) {
-    return repository.deleteById(sku)
+    return repository.deleteBySku(sku)
         .then(productRedisTemplate.opsForValue().delete(sku))
         .doOnSuccess(
             v -> log.info("Product with SKU '{}' successfully deleted from DB and cache.", sku))
