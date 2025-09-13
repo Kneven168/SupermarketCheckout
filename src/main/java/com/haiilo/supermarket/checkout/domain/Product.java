@@ -19,4 +19,9 @@ public record Product(
 
     @Column("offer_price")
     Integer offerPrice
-) {}
+) {
+
+  public boolean hasSpecialOffer() {
+    return this.offerQuantity != null && this.offerPrice != null && this.offerQuantity > 0;
+  }
+}
