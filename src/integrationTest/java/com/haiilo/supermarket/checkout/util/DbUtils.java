@@ -21,7 +21,7 @@ public class DbUtils {
   public static final String PASSWORD = "test123";
   public static final String PRODUCT_TABLE_NAME = "products";
 
-  public static final String DELETE_ALL = "DELETE from products;";
+  public static final String DELETE_ALL = "DELETE from products; DELETE from order_items; DELETE from orders;";
 
   public static final String ID = "id";
   static PostgreSQLR2DBCDatabaseContainer postgreSQLRDBCContainer;

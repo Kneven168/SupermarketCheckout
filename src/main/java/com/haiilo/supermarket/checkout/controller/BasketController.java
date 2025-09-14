@@ -3,6 +3,7 @@ package com.haiilo.supermarket.checkout.controller;
 import static com.haiilo.supermarket.checkout.util.AppConstants.BASKET_ID;
 
 import com.haiilo.supermarket.checkout.domain.Basket;
+import com.haiilo.supermarket.checkout.dto.OrderDTO;
 import com.haiilo.supermarket.checkout.service.BasketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -44,6 +45,11 @@ public class BasketController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public Mono<Void> cancelBasket(@PathVariable String basketId) {
     return basketService.cancelBasket(basketId);
+  }
+
+  @PostMapping("/{basketId}/checkout")
+  public Mono<OrderDTO> checkout(@PathVariable String basketId) {
+    return basketService.checkout(basketId);
   }
 
 }

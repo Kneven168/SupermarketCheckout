@@ -150,6 +150,51 @@ class BasketControllerIntegrationTest extends BaseTest {
         .exchange()
         .expectStatus().isNotFound();
   }
+
+
+  @Test
+  @DisplayName("POST /api/v1/baskets/{id}/checkout should create an order and delete the basket")
+  void checkout_Endpoint() {
+    // 1. Create a products
+    webTestClient.post()
+        .uri(BASE_PRODUCT_URI)
+        .contentType(MediaType.APPLICATION_JSON)
+        .body(Mono.just(PRODUCT_A), Product.class)
+        .exchange()
+        .expectStatus().isCreated() // Ожидаем статус 201 Created
+        .expectBody()
+        .jsonPath("$.id").isNotEmpty()
+        .jsonPath("$.sku").isEqualTo(SKU_A)
+        .jsonPath("$.name").isEqualTo("Apple")
+        .jsonPath("$.unitPrice").isEqualTo(50)
+        .jsonPath("$.offerQuantity").isEqualTo(3)
+        .jsonPath("$.offerPrice").isEqualTo(130);
+
+    // 2. Create basket and add items
+    Basket basket = webTestClient.post().uri(BASE_BASKET_URI)
+        .exchange()
+        .expectBody(Basket.class).returnResult().getResponseBody();
+    assertThat(basket).isNotNull();
+
+    String addItemUri = BASE_BASKET_URI + "/" + basket.getId() + "/items/" + SKU_A;
+    webTestClient.post().uri(addItemUri).exchange().expectStatus().isOk(); // Total should be 50
+
+    // 3. Checkout the basket
+    String checkoutUri = BASE_BASKET_URI + "/" + basket.getId() + "/checkout";
+    webTestClient.post().uri(checkoutUri)
+        .exchange()
+        .expectStatus().isOk()
+        .expectBody()
+        .jsonPath("$.id").isNotEmpty()
+        .jsonPath("$.finalPrice").isEqualTo(50)
+        .jsonPath("$.items[0].productSku").isEqualTo(SKU_A)
+        .jsonPath("$.items[0].quantity").isEqualTo(1);
+
+    // 4. Verify basket is deleted by trying to get it (should fail)
+    webTestClient.get().uri(BASE_BASKET_URI + "/" + basket.getId())
+        .exchange()
+        .expectStatus().isNotFound();
+  }
 }
 
 
