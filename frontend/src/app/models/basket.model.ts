@@ -1,12 +1,7 @@
 export interface Basket {
   id: string;
-  items: BasketItem[]; // SKU -> quantity mapping
+  items: Record<string, number>; // SKU -> quantity mapping
   totalPrice: number;
-}
-
-export interface BasketItem {
-  sku: string;
-  quantity: number;
 }
 
 export interface OrderItem {

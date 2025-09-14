@@ -28,7 +28,10 @@ export class BasketService {
     const basket = this._currentBasket();
     if (!basket) return [];
 
-    return basket.items;
+    return Object.entries(basket.items).map(([sku, quantity]) => ({
+      sku,
+      quantity
+    }));
   });
   readonly totalPrice = computed(() => this._currentBasket()?.totalPrice ?? 0);
 
