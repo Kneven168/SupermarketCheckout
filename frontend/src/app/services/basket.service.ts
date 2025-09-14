@@ -90,7 +90,7 @@ export class BasketService {
     this._loading.set(true);
     this._error.set(null);
 
-    return this.http.put<number>(`${this.baseUrl}/${basketId}/items/${sku}`, {}).pipe(
+    return this.http.delete<number>(`${this.baseUrl}/${basketId}/items/${sku}`).pipe(
       tap(() => {
         // Refresh basket after removing item
         this.getBasket(basketId).subscribe();

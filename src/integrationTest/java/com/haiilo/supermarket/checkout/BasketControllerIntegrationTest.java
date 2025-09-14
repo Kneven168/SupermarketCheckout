@@ -89,7 +89,7 @@ class BasketControllerIntegrationTest extends BaseTest {
   }
 
   @Test
-  @DisplayName("PUT /api/v1/baskets/{id}/items/{sku} should remove one item and return updated total")
+  @DisplayName("DELETE /api/v1/baskets/{id}/items/{sku} should remove one item and return updated total")
   void removeItem_FromBasket_Endpoint() {
     // 1. Create a basket
     Basket basket = webTestClient.post().uri(BASE_BASKET_URI)
@@ -119,13 +119,13 @@ class BasketControllerIntegrationTest extends BaseTest {
     webTestClient.post().uri(baseBasketsItemsUri + SKU_A).exchange().expectStatus().isOk();
 
     // 4. Remove one 'A'. Total should go back to 50.
-    webTestClient.put().uri(baseBasketsItemsUri + SKU_A)
+    webTestClient.delete().uri(baseBasketsItemsUri + SKU_A)
         .exchange()
         .expectStatus().isOk()
         .expectBody(Integer.class).isEqualTo(50);
 
     // 5. Remove the last 'A'. Total should be 0.
-    webTestClient.put().uri(baseBasketsItemsUri + SKU_A)
+    webTestClient.delete().uri(baseBasketsItemsUri + SKU_A)
         .exchange()
         .expectStatus().isOk()
         .expectBody(Integer.class).isEqualTo(0);
