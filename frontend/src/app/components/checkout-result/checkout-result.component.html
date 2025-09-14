@@ -1,0 +1,52 @@
+@if (basketService.lastOrder()) {
+  <div class="checkout-result-container">
+    <div class="success-header">
+      <div class="success-icon">✅</div>
+      <h2>Order Completed Successfully!</h2>
+    </div>
+
+    <div class="order-details">
+      <div class="order-info">
+        <div class="info-row">
+          <span class="label">Order ID:</span>
+          <span class="value">#{{ basketService.lastOrder()!.id }}</span>
+        </div>
+        <div class="info-row">
+          <span class="label">Date:</span>
+          <span class="value">{{ formatDate(basketService.lastOrder()!.createdAt) }}</span>
+        </div>
+      </div>
+
+      <div class="order-items">
+        <h3>Items Purchased:</h3>
+        <div class="items-list">
+          @for (item of basketService.lastOrder()!.items; track item.productSku) {
+            <div class="order-item">
+              <div class="item-details">
+                <span class="item-sku">{{ item.productSku }}</span>
+                <span class="item-quantity">Quantity: {{ item.quantity }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="order-total">
+        <div class="total-row">
+          <span class="total-label">Total Paid:</span>
+          <span class="total-amount">${{ (basketService.lastOrder()!.finalPrice / 100).toFixed(2) }}</span>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button 
+          type="button" 
+          class="new-order-btn"
+          (click)="startNewOrder()"
+        >
+          Start New Order
+        </button>
+      </div>
+    </div>
+  </div>
+}

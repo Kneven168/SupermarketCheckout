@@ -1,0 +1,21 @@
+<!-- Supermarket Checkout Application -->
+
+<div class="app-container">
+  <header class="app-header">
+    <h1>{{ title() }}</h1>
+    <p>Add products to your basket and manage your shopping</p>
+  </header>
+  
+  <main class="app-main">
+    @if (basketService.lastOrder()) {
+      <app-checkout-result></app-checkout-result>
+    } @else {
+      <div class="components-container">
+        <app-sku-input></app-sku-input>
+        <app-basket-display></app-basket-display>
+      </div>
+    }
+  </main>
+</div>
+
+<router-outlet />

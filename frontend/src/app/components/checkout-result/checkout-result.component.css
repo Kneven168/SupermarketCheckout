@@ -1,0 +1,162 @@
+.checkout-result-container {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.success-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.success-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+
+.success-header h2 {
+  margin: 0;
+  color: #28a745;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.order-details {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.order-info {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.info-row:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  font-weight: 600;
+  color: #495057;
+}
+
+.value {
+  font-weight: 500;
+  color: #212529;
+}
+
+.order-items h3 {
+  margin: 0 0 16px 0;
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-item {
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+.item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-sku {
+  font-weight: 600;
+  color: #333;
+  font-size: 16px;
+}
+
+.item-quantity {
+  color: #666;
+  font-size: 14px;
+}
+
+.order-total {
+  background: #e8f5e8;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #28a745;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.total-label {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+}
+
+.total-amount {
+  font-size: 28px;
+  font-weight: 700;
+  color: #28a745;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.new-order-btn {
+  padding: 14px 28px;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 600;
+  transition: background-color 0.2s ease;
+}
+
+.new-order-btn:hover {
+  background: #0056b3;
+}
+
+@media (max-width: 768px) {
+  .checkout-result-container {
+    padding: 24px 16px;
+    margin: 0 16px;
+  }
+  
+  .success-icon {
+    font-size: 48px;
+  }
+  
+  .success-header h2 {
+    font-size: 1.5rem;
+  }
+  
+  .total-amount {
+    font-size: 24px;
+  }
+}

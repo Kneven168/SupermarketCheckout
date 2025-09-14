@@ -1,0 +1,81 @@
+<div class="basket-container">
+  <h2>Shopping Basket</h2>
+  
+  @if (basketService.hasBasket()) {
+    <div class="basket-content">
+      @if (basketService.basketItems().length > 0) {
+        <div class="basket-items">
+          @for (item of basketService.basketItems(); track item.sku) {
+            <div class="basket-item">
+              <div class="item-info">
+                <span class="item-sku">{{ item.sku }}</span>
+                <span class="item-quantity">Qty: {{ item.quantity }}</span>
+              </div>
+              <button 
+                type="button" 
+                class="remove-btn"
+                [disabled]="basketService.loading()"
+                (click)="removeItem(item.sku)"
+                title="Remove one item"
+              >
+                −
+              </button>
+            </div>
+          }
+        </div>
+        
+        <div class="basket-total">
+          <div class="total-row">
+            <span class="total-label">Total:</span>
+            <span class="total-amount">${{ (basketService.totalPrice() / 100).toFixed(2) }}</span>
+          </div>
+        </div>
+        
+        <div class="basket-actions">
+          <button 
+            type="button" 
+            class="checkout-btn"
+            [disabled]="basketService.loading()"
+            (click)="checkout()"
+          >
+            @if (basketService.loading()) {
+              <span class="loading-spinner"></span>
+              Processing...
+            } @else {
+              Checkout
+            }
+          </button>
+          <button 
+            type="button" 
+            class="cancel-basket-btn"
+            [disabled]="basketService.loading()"
+            (click)="cancelBasket()"
+          >
+            @if (basketService.loading()) {
+              <span class="loading-spinner"></span>
+              Canceling...
+            } @else {
+              Cancel Basket
+            }
+          </button>
+        </div>
+      } @else {
+        <div class="empty-basket">
+          <p>Your basket is empty</p>
+          <span class="empty-icon">🛒</span>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="no-basket">
+      <p>No active basket</p>
+      <span class="no-basket-icon">📝</span>
+    </div>
+  }
+  
+  @if (basketService.loading()) {
+    <div class="loading-overlay">
+      <div class="loading-spinner large"></div>
+    </div>
+  }
+</div>

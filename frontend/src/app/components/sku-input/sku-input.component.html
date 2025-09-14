@@ -1,0 +1,46 @@
+<div class="sku-input-container">
+  <h2>Add Product to Basket</h2>
+
+  @if (basketService.error()) {
+    <div class="error-message">
+      {{ basketService.error() }}
+      <button type="button" class="clear-error-btn" (click)="basketService.clearError()">×</button>
+    </div>
+  }
+
+  <div class="input-group">
+    <label for="sku-input">Product SKU:</label>
+    <input
+      id="sku-input"
+      type="text"
+      [(ngModel)]="skuInput"
+      [disabled]="basketService.loading()"
+      placeholder="Enter product SKU"
+      class="sku-input"
+      (keyup.enter)="addToBasket()"
+    />
+  </div>
+
+  <button
+    type="button"
+    class="add-to-basket-btn"
+    [disabled]="!canAddToBasket()"
+    (click)="addToBasket()"
+  >
+    @if (basketService.loading()) {
+      <span class="loading-spinner"></span>
+      Adding...
+    } @else {
+      Add to Basket
+    }
+  </button>
+
+  @if (!basketService.hasBasket()) {
+    <div class="info-message">
+      <p>No basket found. Creating a new basket...</p>
+      <button type="button" class="create-basket-btn" (click)="createBasket()">
+        Start Shopping
+      </button>
+    </div>
+  }
+</div>

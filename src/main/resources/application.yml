@@ -7,8 +7,11 @@ logging:
 spring:
   application:
     name: checkout-service
+  config:
+    activate:
+      on-profile: docker
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/checkout_db
+    url: r2dbc:postgresql://postgres:5432/checkout_db
     username: postgres
     password: test123
     pool:
@@ -19,3 +22,12 @@ spring:
     redis:
       host: redis
       port: 6379
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
