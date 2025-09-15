@@ -5,7 +5,7 @@ This application emulates a supermarket checkout that calculates the total price
 
 ## Architecture
 
-The application is built as a monolith but with a clear logical separation of modules internally which could be separate as independent microservices 
+The application is stateless, cloud-native, ready-to-scale service, built as a monolith but with a clear logical separation of modules internally which could be separate as independent microservices 
 
 - **Product Module**: Responsible for CRUD operations on the product catalog.
 - **Checkout Module**:  Responsible for all business logic related to the shopping process.
@@ -13,7 +13,7 @@ The application is built as a monolith but with a clear logical separation of mo
 ## Data Flow:
 
 - **Products** are stored in PostgreSQL as the single source of truth. They are cached in Redis for faster access.
-- **Baskets** are temporary and stored exclusively in Redis for maximum performance.
+- **Baskets** are temporary and stored exclusively in Redis for maximum performance and keep the app stateless.
 - **Orders** are permanent records of completed purchases and are saved to PostgreSQL.
 
 ## Technology Stack
@@ -119,5 +119,37 @@ The application provides comprehensive API documentation via Swagger/OpenAPI:
 - **Application Info**: http://localhost:8081/actuator/info
 
 
+## Future Improvements
 
+This application serves as a demonstration implementation for a technical assessment and is **not production-ready**. While it showcases core functionality and architectural approaches. This version doesn't cover a lot of edge cases, and several areas require significant enhancement for real-world deployment:
+
+#### Business Logic Enhancements:
+- Add support for complex promotional rules and combinations
+- Implement inventory management and stock validation
+- Clarify business requirements at what point the price and spetial offers should be fixed
+
+#### Security & Authentication:
+- Implement proper authentication and authorization mechanisms
+- Add API rate limiting and request validation
+- Add input validation
+
+#### Data Management & Persistence:
+- Implement proper database migrations and schema versioning
+- Add comprehensive data validation and integrity constraints
+- Add data backup and recovery strategies
+
+#### Error Handling & Resilience:
+- Implement circuit breakers for external service calls
+- Add comprehensive error handling with proper HTTP status codes
+- Add proper logging and monitoring for production debugging
+
+#### Testing & Quality Assurance:
+- Expand test coverage to include edge cases and error scenarios
+- Add performance and load testing
+
+#### Monitoring & Observability:
+- Implement comprehensive application metrics and alerts
+- Add distributed tracing for request flow analysis
+- Implement proper health checks for all dependencies
+- Add business metrics and analytics capabilities
 
