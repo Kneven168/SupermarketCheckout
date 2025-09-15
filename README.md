@@ -5,7 +5,7 @@ This application emulates a supermarket checkout that calculates the total price
 
 ## Architecture
 
-The application is stateless, cloud-native, ready-to-scale service, built as a monolith but with a clear logical separation of modules internally which could be separate as independent microservices 
+The application is stateless, cloud-native, ready-to-scale service, built as a monolith but with a clear logical separation internally which could be separate as independent microservices 
 
 - **Product Module**: Responsible for CRUD operations on the product catalog.
 - **Checkout Module**:  Responsible for all business logic related to the shopping process.
@@ -29,7 +29,6 @@ The application is stateless, cloud-native, ready-to-scale service, built as a m
 
 ### Frontend (generated with AI)
 - **Angular 20** with standalone components
-- **TypeScript 5.9** for type safety
 - **Angular Signals** for reactive state management
 
 ### DevOps & Infrastructure
@@ -50,7 +49,7 @@ The application is stateless, cloud-native, ready-to-scale service, built as a m
 ### Prerequisites
 - **Docker** and **Docker Compose**
 - **Java 17** (for local development)
-- **Node.js 18+** and **npm** (for frontend development)
+- **Node.js 22.19+** and **npm** (for frontend development)
 
 ### Quick Start with Docker
 
@@ -111,13 +110,6 @@ The application provides comprehensive API documentation via Swagger/OpenAPI:
 
 - **Swagger UI**: http://localhost:8081/swagger-ui.html
 - **OpenAPI JSON**: http://localhost:8081/v3/api-docs
-
-## Monitoring and Health Checks
-
-### Health Endpoints
-- **Application Health**: http://localhost:8081/actuator/health
-- **Application Info**: http://localhost:8081/actuator/info
-
 
 ## Future Improvements
 
