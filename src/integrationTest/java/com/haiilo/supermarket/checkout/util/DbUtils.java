@@ -1,73 +1,19 @@
 package com.haiilo.supermarket.checkout.util;
 
-
-import static io.r2dbc.spi.ConnectionFactoryOptions.USER;
-
 import com.haiilo.supermarket.checkout.domain.Product;
-import io.r2dbc.spi.ConnectionFactories;
-import io.r2dbc.spi.ConnectionFactory;
-import io.r2dbc.spi.ConnectionFactoryOptions;
-import org.junit.ClassRule;
 import org.springframework.r2dbc.core.DatabaseClient;
-import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.PostgreSQLR2DBCDatabaseContainer;
-import org.testcontainers.utility.DockerImageName;
 
 public class DbUtils {
 
-  public static final String DATABASE_NAME = "checkout_db";
-  public static final String IMAGE_NAME = "postgres:13";
-  public static final String USERNAME = "postgres";
-  public static final String PASSWORD = "test123";
   public static final String PRODUCT_TABLE_NAME = "products";
-
   public static final String DELETE_ALL = "DELETE from products; DELETE from order_items; DELETE from orders;";
-
   public static final String ID = "id";
-  static PostgreSQLR2DBCDatabaseContainer postgreSQLRDBCContainer;
-  @ClassRule
-  public static PostgreSQLContainer<?> postgreSQLContainer;
 
-  public static PostgreSQLR2DBCDatabaseContainer getR2BCDbContainer(
-      PostgreSQLContainer postgreSQLContainer) {
-    postgreSQLRDBCContainer = new PostgreSQLR2DBCDatabaseContainer(postgreSQLContainer);
-    return postgreSQLRDBCContainer;
-  }
-
-  public static PostgreSQLContainer getDbContainer(String scriptFile) {
-    postgreSQLContainer =
-        new PostgreSQLContainer<>(DockerImageName.parse(IMAGE_NAME))
-            .withDatabaseName(DATABASE_NAME)
-            .withUsername(USERNAME)
-            .withPassword(PASSWORD)
-            .withReuse(true);
-
-    return postgreSQLContainer;
-  }
-
-  private static ConnectionFactory connectionFactory(PostgreSQLContainer postgreSQLContainer) {
-    final ConnectionFactoryOptions.Builder builder =
-        ConnectionFactoryOptions.parse(
-                "r2dbc:postgresql://"
-                    + postgreSQLContainer.getHost()
-                    + ":"
-                    + postgreSQLContainer.getFirstMappedPort()
-                    + "/"
-                    + postgreSQLContainer.getDatabaseName())
-            .mutate();
-    builder.option(USER, postgreSQLContainer.getUsername());
-    builder.option(ConnectionFactoryOptions.PASSWORD, postgreSQLContainer.getPassword());
-
-    return ConnectionFactories.get(builder.build());
-  }
-
-  public static void cleanUp(PostgreSQLContainer postgreSQLContainer) {
-    DatabaseClient dbClient = DatabaseClient.create(connectionFactory(postgreSQLContainer));
+  public static void cleanUp(DatabaseClient dbClient) {
     dbClient.sql(DELETE_ALL).fetch().rowsUpdated().block();
   }
 
-  public static void loadRecord(Product product, PostgreSQLContainer postgreSQLContainer) {
-    DatabaseClient dbClient = DatabaseClient.create(connectionFactory(postgreSQLContainer));
+  public static void loadRecord(Product product, DatabaseClient dbClient) {
     dbClient
         .sql(
             "INSERT INTO "
@@ -88,6 +34,4 @@ public class DbUtils {
         .map(r -> r.get(ID))
         .block();
   }
-
-
 }

@@ -38,7 +38,7 @@ class ProductControllerIntegrationTest extends BaseTest {
   @DisplayName("GET /api/v1/products/{sku} should return a product")
   void getProduct_Endpoint() {
     Product existingProduct = new Product(null, SKU_B, "Banana", 30, 5, 100);
-    DbUtils.loadRecord(existingProduct, postgreSQLContainer);
+    DbUtils.loadRecord(existingProduct, databaseClient);
 
     webTestClient.get()
         .uri(BASE_PRODUCT_URI+ "/" + SKU_B)
@@ -57,7 +57,7 @@ class ProductControllerIntegrationTest extends BaseTest {
   @DisplayName("PUT /api/v1/products/{sku} should update a product")
   void updateProduct_Endpoint() {
     Product originalProduct = new Product(null, SKU_C, "Cherry", 60, 5, 400);
-    DbUtils.loadRecord(originalProduct, postgreSQLContainer);
+    DbUtils.loadRecord(originalProduct, databaseClient);
 
     Product updatedInfo = new Product(null, SKU_C, "Sweet Cherry", 70, 4, 300);
 
@@ -79,7 +79,7 @@ class ProductControllerIntegrationTest extends BaseTest {
   @DisplayName("DELETE /api/v1/products/{sku} should delete a product")
   void deleteProduct_Endpoint() {
     Product productToDelete = new Product(null, "D", "Date", 100, 4, 300);
-    DbUtils.loadRecord(productToDelete, postgreSQLContainer);
+    DbUtils.loadRecord(productToDelete, databaseClient);
 
     webTestClient.delete()
         .uri(BASE_PRODUCT_URI+ "/D")

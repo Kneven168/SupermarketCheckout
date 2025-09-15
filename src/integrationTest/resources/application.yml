@@ -1,5 +1,18 @@
+spring:
+  r2dbc:
+    pool:
+      initial-size: 5
+      max-size: 10
+      max-idle-time: 30m
+  data:
+    redis:
+      timeout: 2000ms
+
 logging:
   level:
     com.haiilo.supermarket.checkout: DEBUG
     org.springframework.boot.testcontainers: DEBUG
     org.testcontainers: INFO
+    org.springframework.r2dbc: DEBUG
+    io.r2dbc.postgresql.QUERY: DEBUG
+    io.r2dbc.postgresql.PARAM: DEBUG
